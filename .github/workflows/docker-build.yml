@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/ccache
-          key: ccache-${{ inputs.ubuntu_version }}-${{ hashFiles('ubuntu-desktop/docker_config/post_install.sh') }}
+          key: ccache-${{ inputs.ubuntu_version }}-${{ hashFiles('ubuntu-desktop/docker_config/build_sdr.sh') }}
           restore-keys: |
             ccache-${{ inputs.ubuntu_version }}-
 
