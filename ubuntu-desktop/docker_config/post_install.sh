@@ -194,9 +194,6 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc) && make install
 cd / && rm -rf /tmp/SoapySDRPlay3
 
-# ===== Remove build dependencies to shrink image =====
-# Purge only -dev packages; runtime libs (libfftw3, libqt5, etc.) needed by
-# source-built projects remain.  Skip autoremove to keep those libraries.
-dpkg -l | awk '/^ii/ {print $2}' | grep '\-dev' | xargs apt-get purge -y 2>/dev/null || true
+# ===== Keep all packages (SDR++ .deb requires -dev packages) =====
 rm -rf /var/lib/apt/lists/*
 

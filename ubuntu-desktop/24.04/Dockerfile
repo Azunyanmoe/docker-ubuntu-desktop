@@ -35,6 +35,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         xfce4 \
         terminator \
         adwaita-icon-theme-full \
+        elementary-xfce-icon-theme \
+        xfce4-whiskermenu-plugin \
         fonts-wqy-zenhei \
         pulseaudio \
         ffmpeg \
