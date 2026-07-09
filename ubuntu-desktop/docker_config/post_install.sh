@@ -40,6 +40,13 @@ SDRPP_DEB="sdrpp_debian_sid_${arch}.deb"
 [ "$arch" = "arm64" ] && SDRPP_DEB="sdrpp_debian_sid_aarch64.deb"
 curl -fSL "https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/${SDRPP_DEB}" -o /tmp/sdrpp.deb
 apt-get install -y /tmp/sdrpp.deb && rm /tmp/sdrpp.deb
+# Create symlinks for SDR++ (built for Debian sid, running on Ubuntu 24.04)
+for f in /usr/lib/$(dpkg --print-architecture)-linux-gnu/libvolk.so.3.*; do
+    if [ -f "$f" ]; then
+        ln -sf "$f" "$(dirname "$f")/libvolk.so.3.3"
+    fi
+done
+ldconfig
 
 # ===== ccache setup =====
 export CCACHE_DIR=/root/.ccache
