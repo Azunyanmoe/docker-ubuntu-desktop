@@ -1,0 +1,73 @@
+name: Build and Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      ubuntu_version:
+        description: 'Ubuntu version'
+        default: '24.04'
+      cuda_tag:
+        description: 'CUDA tag (e.g. 12.8.0-cudnn-devel, leave empty for no CUDA)'
+        required: false
+      custom_tags:
+        description: 'Extra image tags (comma-separated, e.g. v1.0,nightly)'
+        required: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable=true
+            type=raw,value=${{ inputs.custom_tags }}
+          flavor: |
+            latest=false
+
+      - name: Restore ccache
+        id: ccache-cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/ccache
+          key: ccache-${{ inputs.ubuntu_version }}-${{ hashFiles('ubuntu-desktop/docker_config/post_install.sh') }}
+          restore-keys: |
+            ccache-${{ inputs.ubuntu_version }}-
+
+      - name: Ensure ccache dir exists
+        run: mkdir -p /tmp/ccache
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ubuntu-desktop/${{ inputs.ubuntu_version }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-contexts: |
+            ccache-host=/tmp/ccache
+          build-args: |
+            BASE_IMAGE=ubuntu:${{ inputs.ubuntu_version }}
+            ${{ inputs.cuda_tag && format('CUDA_BASE=nvidia/cuda:{0}-runtime-ubuntu{1}', inputs.cuda_tag, inputs.ubuntu_version) || '' }}
