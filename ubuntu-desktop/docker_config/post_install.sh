@@ -33,6 +33,13 @@ bash /docker_config/install_novnc.sh
 add-apt-repository -y ppa:xtradeb/apps
 apt-get install -y --no-install-recommends chromium
 update-alternatives --set x-www-browser /usr/bin/chromium
+# Chromium wrapper to add --no-sandbox for container environment
+cat > /usr/local/bin/chromium << 'EOF'
+#!/bin/sh
+exec /usr/bin/chromium --no-sandbox "$@"
+EOF
+chmod +x /usr/local/bin/chromium
+update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/local/bin/chromium 100
 
 # ===== SDR++ nightly .deb =====
 SDRPP_DEB="sdrpp_debian_sid_${arch}.deb"
