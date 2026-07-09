@@ -6,6 +6,7 @@ BUILD_DEPS="\
     gfortran \
     ccache \
     unzip \
+    git \
     libfftw3-dev libpng-dev libtiff-dev libjemalloc-dev \
     libcurl4-openssl-dev libsqlite3-dev libvolk-dev libnng-dev \
     libglfw3-dev libdbus-1-dev portaudio19-dev libzstd-dev libhdf5-dev librtaudio-dev \
