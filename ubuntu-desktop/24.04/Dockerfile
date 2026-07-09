@@ -16,7 +16,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DISABLE_HTTPS=true
 
 # Basic system setup
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         locales \
         tzdata \
         ca-certificates \
@@ -34,6 +34,7 @@ RUN bash /docker_config/pre_install.sh && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y --no-install-recommends \
         xfce4 \
         terminator \
+        adwaita-icon-theme-full \
         fonts-wqy-zenhei \
         pulseaudio \
         ffmpeg \

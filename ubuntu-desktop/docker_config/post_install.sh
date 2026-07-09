@@ -9,7 +9,7 @@ BUILD_DEPS="\
     unzip \
     libfftw3-dev libpng-dev libtiff-dev libjemalloc-dev \
     libcurl4-openssl-dev libsqlite3-dev libvolk-dev libnng-dev \
-    libglfw3-dev libdbus-1-dev portaudio19-dev libzstd-dev libhdf5-dev \
+    libglfw3-dev libdbus-1-dev portaudio19-dev libzstd-dev libhdf5-dev librtaudio-dev \
     libxrandr-dev \
     librtlsdr-dev libhackrf-dev libairspy-dev libairspyhf-dev \
     libad9361-dev libiio-dev libbladerf-dev libomp-dev \
@@ -38,8 +38,10 @@ update-alternatives --set x-www-browser /usr/bin/chromium
 SDRPP_DEB="sdrpp_debian_sid_${arch}.deb"
 [ "$arch" = "amd64" ] && SDRPP_DEB="sdrpp_debian_sid_amd64.deb"
 [ "$arch" = "arm64" ] && SDRPP_DEB="sdrpp_debian_sid_aarch64.deb"
-    curl -fSL "https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/${SDRPP_DEB}" -o /tmp/sdrpp.deb
+curl -fSL "https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/${SDRPP_DEB}" -o /tmp/sdrpp.deb
 apt-get install -y /tmp/sdrpp.deb && rm /tmp/sdrpp.deb
+# Install runtime libraries so SDR++ survives the -dev purge at script end
+apt-get install -y --no-install-recommends libfftw3-3 libglfw3 libvolk2 librtaudio7 libzstd1
 
 # ===== ccache setup =====
 export CCACHE_DIR=/root/.ccache
