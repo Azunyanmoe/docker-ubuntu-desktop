@@ -40,8 +40,6 @@ SDRPP_DEB="sdrpp_debian_sid_${arch}.deb"
 [ "$arch" = "arm64" ] && SDRPP_DEB="sdrpp_debian_sid_aarch64.deb"
 curl -fSL "https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/${SDRPP_DEB}" -o /tmp/sdrpp.deb
 apt-get install -y /tmp/sdrpp.deb && rm /tmp/sdrpp.deb
-# Install runtime libraries so SDR++ survives the -dev purge at script end
-apt-get install -y --no-install-recommends libfftw3-3 libglfw3 libvolk2 librtaudio7 libzstd1
 
 # ===== ccache setup =====
 export CCACHE_DIR=/root/.ccache
