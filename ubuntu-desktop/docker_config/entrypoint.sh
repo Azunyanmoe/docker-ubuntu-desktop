@@ -72,6 +72,10 @@ fi
 if [ -f "/docker_config/custom_startup.sh" ]; then
 	bash /docker_config/custom_startup.sh
 fi
+# start chrony NTP client
+if command -v chronyd >/dev/null 2>&1; then
+    chronyd -x &
+fi
 # start sshd
 /usr/sbin/sshd
 # start sdrplay api service

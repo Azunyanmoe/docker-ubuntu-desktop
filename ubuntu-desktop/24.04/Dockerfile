@@ -41,6 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         pulseaudio \
         ffmpeg \
         dbus-x11 \
+        chrony \
         cmake \
         pkgconf \
         htop \
