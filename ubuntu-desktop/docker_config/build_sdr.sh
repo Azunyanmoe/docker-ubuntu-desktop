@@ -3,7 +3,9 @@ set -e
 arch=$(dpkg --print-architecture)
 
 BUILD_DEPS="\
+    build-essential \
     gfortran \
+    make cmake \
     ccache \
     unzip \
     git \
