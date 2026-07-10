@@ -19,20 +19,6 @@ EOF
 chmod +x /usr/local/bin/chromium
 update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/local/bin/chromium 100
 
-# SDR++ nightly .deb
-SDRPP_DEB="sdrpp_debian_sid_${arch}.deb"
-[ "$arch" = "amd64" ] && SDRPP_DEB="sdrpp_debian_sid_amd64.deb"
-[ "$arch" = "arm64" ] && SDRPP_DEB="sdrpp_debian_sid_aarch64.deb"
-curl -fSL "https://github.com/AlexandreRouma/SDRPlusPlus/releases/download/nightly/${SDRPP_DEB}" -o /tmp/sdrpp.deb
-apt-get install -y /tmp/sdrpp.deb && rm /tmp/sdrpp.deb
-
-for f in /usr/lib/$(dpkg --print-architecture)-linux-gnu/libvolk.so.3.*; do
-    if [ -f "$f" ]; then
-        ln -sf "$f" "$(dirname "$f")/libvolk.so.3.3"
-    fi
-done
-ldconfig
-
 # GridTracker2 .deb
 GT_DEB="GridTracker2-2.260701.1-${arch}.deb"
 [ "$arch" = "amd64" ] && GT_DEB="GridTracker2-2.260701.1-amd64.deb"

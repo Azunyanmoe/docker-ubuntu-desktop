@@ -41,6 +41,9 @@ curl -fSL "https://sourceforge.net/projects/jtdx-improved/files/jtdx_2.2.159/Sou
 cd /tmp && unzip -q jtdx.zip && rm jtdx.zip
 mkdir -p /tmp/jtdx/build
 
+git clone --recursive --depth 1 "https://github.com/AlexandreRouma/SDRPlusPlus.git" /tmp/SDRPlusPlus
+mkdir -p /tmp/SDRPlusPlus/build
+
 (
   cd /tmp/SatDump/build
   cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -66,6 +69,15 @@ mkdir -p /tmp/jtdx/build
   make -j$(nproc)
 ) &
 
+(
+  cd /tmp/SDRPlusPlus/build
+  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+    -DUSE_INTERNAL_LIBCORRECT=ON \
+    -DOPT_BUILD_SDRPLAY_SOURCE=OFF ..
+  make -j$(nproc)
+) &
+
 BUILD_FAIL=0
 for job in $(jobs -p); do
   wait "$job" || BUILD_FAIL=1
@@ -80,6 +92,9 @@ cd / && rm -rf /tmp/wsjtx*
 
 cd /tmp/jtdx/build && make install
 cd / && rm -rf /tmp/jtdx*
+
+cd /tmp/SDRPlusPlus/build && make install
+cd / && rm -rf /tmp/SDRPlusPlus
 
 # ── Stage 1: ldd-detectable runtime deps ──
 # For each resolved .so path, dpkg -S gives the owning package.
@@ -105,6 +120,8 @@ cat >> /docker_config/runtime-deps.txt << 'EOF'
 intel-opencl-icd
 mesa-opencl-icd
 curl
+libqt5sql5-sqlite
+libhamlib-utils
 EOF
 
 sort -u -o /docker_config/runtime-deps.txt /docker_config/runtime-deps.txt
