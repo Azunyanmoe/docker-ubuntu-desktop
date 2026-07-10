@@ -9,6 +9,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 COPY ubuntu-desktop/docker_config /docker_config/
 
+RUN bash /docker_config/install_build_deps.sh
+
 RUN --mount=type=bind,from=ccache-host,source=/,target=/root/.ccache,rw \
     bash /docker_config/build_sdr.sh
 

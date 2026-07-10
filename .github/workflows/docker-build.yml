@@ -17,6 +17,10 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+concurrency:
+  group: docker-build
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,6 +46,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable=true
             type=raw,value=${{ inputs.custom_tags }}
+            type=raw,value=${{ github.sha }},enable=true
           flavor: |
             latest=false
 
@@ -50,9 +55,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/ccache
-          key: ccache-${{ inputs.ubuntu_version }}-${{ hashFiles('ubuntu-desktop/docker_config/build_sdr.sh') }}
+          key: ccache-${{ hashFiles(
+            'ubuntu-desktop/docker_config/build_sdr.sh',
+            'ubuntu-desktop/docker_config/install_sdr.sh',
+            'ubuntu-desktop/docker_config/install_build_deps.sh',
+            'ubuntu-desktop/24.04/Dockerfile') }}
           restore-keys: |
-            ccache-${{ inputs.ubuntu_version }}-
+            ccache-
 
       - name: Ensure ccache dir exists
         run: mkdir -p /tmp/ccache
