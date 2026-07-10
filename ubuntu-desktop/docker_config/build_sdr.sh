@@ -30,6 +30,13 @@ export CCACHE_DIR=/root/.ccache
 export CCACHE_MAXSIZE=4G
 ccache --zero-stats
 
+# GCC 14 on Ubuntu 24.04 may emit AVX-512 (EVEX) instructions even with
+# -march=x86-64-v3, which crashes on CPUs without AVX-512 (e.g. Intel N150).
+export CFLAGS="-mno-avx512f"
+export CXXFLAGS="-mno-avx512f"
+export FCFLAGS="-mno-avx512f"
+export FFLAGS="-mno-avx512f"
+
 git clone --depth 1 "https://github.com/SatDump/SatDump.git" /tmp/SatDump
 mkdir -p /tmp/SatDump/build
 
@@ -131,6 +138,9 @@ libglfw3
 libjemalloc2
 libnng1
 libboost-log1.83.0
+libhdf5-cpp-103t64
+libad9361-0
+libairspyhf1
 EOF
 
 sort -u -o /docker_config/runtime-deps.txt /docker_config/runtime-deps.txt

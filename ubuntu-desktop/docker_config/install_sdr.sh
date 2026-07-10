@@ -18,6 +18,7 @@ exec /usr/bin/chromium --no-sandbox "$@"
 EOF
 chmod +x /usr/local/bin/chromium
 update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/local/bin/chromium 100
+sed -i 's|Exec=/usr/bin/chromium %U|Exec=/usr/local/bin/chromium %U|' /usr/share/applications/chromium.desktop
 
 # GridTracker2 .deb
 GT_DEB="GridTracker2-2.260701.1-${arch}.deb"
