@@ -138,7 +138,7 @@ libglfw3
 libjemalloc2
 libnng1
 libboost-log1.83.0
-libhdf5-cpp-103t64
+libhdf5-cpp-103-1t64
 libad9361-0
 libairspyhf1
 EOF
