@@ -101,8 +101,9 @@ cd / && rm -rf /tmp/SDRPlusPlus
 # When it returns a -dev package (unversioned symlink), resolve its
 # runtime counterpart via apt-cache Depends.
 find /usr/local -type f \( -executable -o -name '*.so*' \) | \
-  xargs -r ldd 2>/dev/null | grep "=> /" | awk '{print $3}' | sort -u | \
-  xargs -r dpkg -S 2>/dev/null | cut -d: -f1 | sort -u > /tmp/raw-runtime-deps.txt
+  xargs -r ldd 2>/dev/null | grep "=> /" || true | awk '{print $3}' | sort -u | \
+  grep -v '^/usr/local/' | \
+  xargs -r dpkg -S 2>/dev/null | cut -d: -f1 | sort -u > /tmp/raw-runtime-deps.txt || true
 
 # Keep non-dev packages directly, resolve -dev to their runtime deps
 grep -v '\-dev' /tmp/raw-runtime-deps.txt > /docker_config/runtime-deps.txt
@@ -122,6 +123,11 @@ mesa-opencl-icd
 curl
 libqt5sql5-sqlite
 libhamlib-utils
+libvolk3.1t64
+libglfw3
+libjemalloc2
+libnng1
+libboost-log1.83.0
 EOF
 
 sort -u -o /docker_config/runtime-deps.txt /docker_config/runtime-deps.txt
