@@ -101,20 +101,23 @@ cd / && rm -rf /tmp/SDRPlusPlus
 # When it returns a -dev package (unversioned symlink), resolve its
 # runtime counterpart via apt-cache Depends.
 find /usr/local -type f \( -executable -o -name '*.so*' \) | \
-  xargs -r ldd 2>/dev/null | grep "=> /" || true | awk '{print $3}' | sort -u | \
+  xargs -r ldd 2>/dev/null | { grep "=> /" || true; } | awk '{print $3}' | sort -u | \
   grep -v '^/usr/local/' | \
   xargs -r dpkg -S 2>/dev/null | cut -d: -f1 | sort -u > /tmp/raw-runtime-deps.txt || true
 
-# Keep non-dev packages directly, resolve -dev to their runtime deps
-grep -v '\-dev' /tmp/raw-runtime-deps.txt > /docker_config/runtime-deps.txt
+> /docker_config/runtime-deps.txt
 
-if grep -q '\-dev' /tmp/raw-runtime-deps.txt 2>/dev/null; then
-  grep '\-dev' /tmp/raw-runtime-deps.txt | \
-    xargs -r apt-cache depends 2>/dev/null | \
-    grep "Depends:" | awk '{print $2}' | grep -v '\-dev' | \
-    grep -E '^lib' >> /docker_config/runtime-deps.txt
+if [ -f /tmp/raw-runtime-deps.txt ] && [ -s /tmp/raw-runtime-deps.txt ]; then
+  grep -v '\-dev' /tmp/raw-runtime-deps.txt >> /docker_config/runtime-deps.txt
+
+  if grep -q '\-dev' /tmp/raw-runtime-deps.txt 2>/dev/null; then
+    grep '\-dev' /tmp/raw-runtime-deps.txt | \
+      xargs -r apt-cache depends 2>/dev/null | \
+      grep "Depends:" | awk '{print $2}' | grep -v '\-dev' | \
+      grep -E '^lib' >> /docker_config/runtime-deps.txt
+  fi
+  rm -f /tmp/raw-runtime-deps.txt
 fi
-rm -f /tmp/raw-runtime-deps.txt
 
 # ── Stage 2: deps invisible to ldd (dlopen, subprocess, etc.) ──
 cat >> /docker_config/runtime-deps.txt << 'EOF'
